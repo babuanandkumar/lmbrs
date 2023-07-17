@@ -6,11 +6,13 @@ import biz
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-
-
-#@app.before_first_request
-def load_app_data():
+with app.app_context():
     biz.init()
+
+
+# #@app.before_first_request
+# def load_app_data():
+#     biz.init()
 
 
 @app.route("/")
