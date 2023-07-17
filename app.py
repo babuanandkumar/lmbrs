@@ -8,7 +8,7 @@ app.secret_key = os.urandom(24)
 
 
 
-@app.before_first_request
+#@app.before_first_request
 def load_app_data():
     biz.init()
 
