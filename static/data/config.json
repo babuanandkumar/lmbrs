@@ -1,0 +1,11 @@
+{
+    "QUERIES_PATH": "static/data/queries.json",
+    "DB_CONFIG": {
+              "user": "root",
+              "password": "root",
+              "host": "localhost",
+              "port": 8889,
+              "database": "LMBRS",
+              "raise_on_warnings": false
+    }
+}

@@ -1,0 +1,9 @@
+<script>
+{% if error: %}
+    showPane("errorPane", "{{error}}")
+{% endif %}
+
+{% if success: %}
+    showPane("successPane", "{{success}}")
+{% endif %}
+</script>
