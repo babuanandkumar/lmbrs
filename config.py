@@ -16,6 +16,7 @@ def init():
 def load_config():
     global config
     config = load_json(CONFIG_PATH)
+    print("Config :" + str(config))
 
 
 def load_json(path):
@@ -42,3 +43,4 @@ def sql(name, join = False):
 def load_queries():
     global queries
     queries = load_json(get("QUERIES_PATH"))
+    print("Queries :" + str(queries))
