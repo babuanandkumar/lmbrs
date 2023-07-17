@@ -1,12 +1,10 @@
 import config
 import dao
-import sys
 
 
 def init():
     config.init()
     print("Biz Config Loaded...")
-    sys.stdout.flush()
 
 
 def update_last_logon(user_id):
