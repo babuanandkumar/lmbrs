@@ -4,7 +4,6 @@ import dao
 
 def init():
     config.init()
-    print("Biz Config Loaded...")
 
 
 def update_last_logon(user_id):
