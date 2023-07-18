@@ -1,5 +1,6 @@
 import config
 import dao
+from flask import jsonify
 
 
 def init():
@@ -18,8 +19,8 @@ def get_logon_profile(user_id, pwd):
     return None
 
 
-def get_new_publications(limit):
-    new_publications = dao.fetch(config.sql("NEW_PUBLICATIONS"), (limit, ))
+def get_new_publications(start, limit):
+    new_publications = dao.fetch(config.sql("NEW_PUBLICATIONS"), (start, limit))
     return consolidate_books(new_publications)
 
 

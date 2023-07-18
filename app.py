@@ -1,4 +1,6 @@
-from flask import Flask, redirect, url_for, render_template, request, session
+from flask import Flask, redirect, url_for, render_template, request, session, jsonify
+import json
+import decimal
 import os
 import biz
 
@@ -9,6 +11,10 @@ app.secret_key = os.urandom(24)
 with app.app_context():
     biz.init()
 
+
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal): return float(obj)
 
 # #@app.before_first_request
 # def load_app_data():
@@ -28,17 +34,26 @@ def login():
         else:
             biz.update_last_logon(user_profile["id"])
             session["user_profile"] = user_profile
-            return new_publications()
+            return list_books()
     else: return render_template("login.html", error = "Invalid Credentials. Please try again")
 
 
-@app.route("/newpublications", methods = ['POST'])
-def new_publications():
+@app.route("/books", methods = ['POST'])
+def list_books():
     user_profile = session["user_profile"]
-    new_publications = biz.get_new_publications(20)
-    return render_template("new_publications.html",
+    return render_template("list_books.html",
                            user_name = user_profile["f_name"].strip() + ", " + user_profile["l_name"].strip(),
-                           new_publications = new_publications)
+                           start = 0)
+
+
+@app.route("/getbooks", methods = ['POST'])
+def get_books():
+    key = request.values.get("key")
+    start = request.values.get("start")
+    print("Start Received :" + str(start))
+    if not start: start = 0
+    if key == "NEW_PUB":
+        return json.dumps(biz.get_new_publications(int(start), 20), cls=Encoder)
 
 
 @app.route("/logout")
