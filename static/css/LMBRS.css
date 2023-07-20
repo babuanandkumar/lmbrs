@@ -34,6 +34,11 @@ html, body, html * {
     font-weight:bold;
 }
 
+.bookTitleView {
+    font-size:14pt;
+    font-weight:bold;
+}
+
 .descriptionList {
     font-size:10pt;
     font-style:italic;
@@ -54,4 +59,18 @@ html, body, html * {
 
 ratingStar_full {
     fa fa-star-half-full
+}
+
+.lblAvailable {
+    font-size:8pt;
+    background-color:#0FFF50;
+    color:black;
+    font-weight:bold;
+}
+
+.lblNotAvailable {
+    font-size:8pt;
+    background-color:lightGray;
+    color:black;
+    font-weight:bold;
 }

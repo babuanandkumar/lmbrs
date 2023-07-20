@@ -19,9 +19,28 @@ def get_logon_profile(user_id, pwd):
     return None
 
 
-def get_new_publications(start, limit):
-    new_publications = dao.fetch(config.sql("NEW_PUBLICATIONS"), (start, limit))
-    return consolidate_books(new_publications)
+def get_books(title, description, lang_id, order_by, start, limit, recommended):
+    if recommended == "true":
+        books = dao.fetch(config.sql("SEARCH_RECOMMENDED_BOOKS"), ("%" + title.strip().lower() + "%", "%" + description.strip().lower() + "%", int(lang_id), int(order_by), int(start), int(limit)))
+    else:
+        books = dao.fetch(config.sql("SEARCH_BOOKS"), ("%" + title.strip().lower() + "%", "%" + description.strip().lower() + "%", int(lang_id), int(order_by), int(start), int(limit)))
+    return consolidate_books(books)
+
+
+def get_all_languages() :
+    languages = dao.fetch(config.sql("LANGUAGES"), ())
+    return languages
+
+
+def borrow_if_available(book_id, person_id):
+    availability = dao.fetch(config.sql("GET_BOOK_AVAILABILITY"), (book_id, ))
+    if len(availability) > 0:
+        book_copy_id = availability[0]["id"]
+        print("Book Copy Id :" + str(book_copy_id) + " : " + str(person_id))
+        dao.exec(config.sql("CREATE_BORROW_RECORD"), (book_copy_id, person_id))
+        dao.exec(config.sql("UPDATE_BORROW_STATUS"), (2, book_copy_id))
+        return True
+    return False
 
 
 def consolidate_books(books_list):
@@ -40,5 +59,3 @@ def consolidate_books(books_list):
             if book["format"] not in books[id]["format"]: books[id]["format"].append(book["format"])
             if book["genre"] not in books[id]["genre"]: books[id]["genre"].append(book["genre"])
     return list(books.values())
-
-

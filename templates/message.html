@@ -1,9 +1,13 @@
 <script>
-{% if error: %}
-    showPane("errorPane", "{{error}}")
-{% endif %}
+    {% if error and error | length > 0: %}
+        showPane("errorPane", "{{error}}")
+    {% else %}
+        hidePane("errorPane")
+    {% endif %}
 
-{% if success: %}
-    showPane("successPane", "{{success}}")
-{% endif %}
+    {% if success and success | length > 0: %}
+        showPane("successPane", "{{success}}")
+    {% else %}
+        hidePane("successPane")
+    {% endif %}
 </script>
