@@ -6,5 +6,8 @@
     "LANGUAGES": "SELECT id, name FROM language WHERE name <> '';",
     "GET_BOOK_AVAILABILITY": "SELECT id FROM book_copy WHERE book_id = %s AND borrow_status_id = 1 LIMIT 1;",
     "CREATE_BORROW_RECORD": "INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) VALUES (%s, %s, CURRENT_DATE(), DATE_ADD(CURRENT_DATE(), INTERVAL 32 DAY));",
-    "UPDATE_BORROW_STATUS": "UPDATE book_copy SET borrow_status_id = %s WHERE id = %s;"
+    "UPDATE_BORROW_STATUS": "UPDATE book_copy SET borrow_status_id = %s WHERE id = %s;",
+    "BORROWALS_MEMBER": "SELECT bk.id as book_id, bk.title, bk.coverImg, lang.name as lang, copy.id as book_copy_id, DATE_FORMAT(bw.borrow_date,'%m/%d/%Y') AS borrow_date, DATE_FORMAT(bw.return_date,'%m/%d/%Y') AS return_date, copy.borrow_status_id, bs.status, bk.* FROM borrowal bw\tINNER JOIN book_copy copy ON copy.id = bw.book_copy_id  INNER JOIN borrow_status bs ON bs.id = copy.borrow_status_id INNER JOIN book bk ON bk.id = copy.book_id LEFT OUTER JOIN language lang on lang.id = bk.lang_id WHERE bw.person_id = %s ORDER BY return_date;",
+    "UPDATE_BOOK_COPY_BORROW_STATUS": "UPDATE book_copy SET borrow_status_id = %s WHERE id = %s;",
+    "CANCEL_BORROW": "DELETE FROM borrowal WHERE book_copy_id = %s and person_id = %s;"
 }

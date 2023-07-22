@@ -23,6 +23,14 @@ function showBooks() {
     document.books_form.submit();
 }
 
+function showBooksRecommended() {
+    document.books_recommended_form.submit();
+}
+
+function showMemberBorrowals() {
+    document.member_borrowals_form.submit();
+}
+
 function showModal(title, message) {
     $("#modalTitle").html(title);
     $("#modalBody").html(message);
@@ -44,14 +52,54 @@ function checkEnter() {
     if(keycode == '13') newSearch(1);
 }
 
+function cancelBorrow(bookCopyId, bookId) {
+    if (confirm("Please confirm cancelling the borrowal of the book - '" + booksLoaded["" + bookId]["title"] + "'")) {
+        fetchData("/cancelborrow", {"book_copy_id": bookCopyId}, cancelBorrowSuccess, cancelBorrowFailed);
+    }
+}
+
+function returnBook(bookCopyId, bookId) {
+    if (confirm("Please confirm return of the book - '" + booksLoaded["" + bookId]["title"] + "'")) {
+        fetchData("/returnbook", {"book_copy_id": bookCopyId}, returnBookSuccess, returnBookFailed);
+    }
+}
+
+function cancelBorrowSuccess(data) {
+    if (data["success"] == true) {
+        getMemberBooks();
+    } else {
+        showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to cancel borrow.")
+    }
+}
+
+function cancelBorrowFailed(data) {
+    showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to cancel borrow.")
+}
+
+function returnBookSuccess(data) {
+    if (data["success"] == true) {
+        getMemberBooks();
+    } else {
+        showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to return book.")
+    }
+}
+
+function returnBookFailed(data) {
+    showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to return book.")
+}
+
 function searchBooks(limit) {
     togglePanes(1);
     search = $("#hidSearch").val();
     langId = "" + $("#hidLang").val();
     order = $("#hidOrder").val();
     start = $("#startRow").val();
-    fetch_data("/getbooks", {"start": start, "lang_id": langId, "order": order, "search": search, "limit": limit, "recommended": isRecommended},
-                        books_fetched, books_fetch_failed);
+    fetchData("/getbooks", {"start": start, "lang_id": langId, "order": order, "search": search, "limit": limit, "recommended": isRecommended},
+                        booksFetched, booksFetchFailed);
+}
+
+function getMemberBooks() {
+    fetchData("/getmemberbooks", {}, memberBooksFetched, memberBooksFetchFailed);
 }
 
 function refreshSearch(id) {
@@ -82,7 +130,7 @@ function togglePanes(func) {
 }
 
 function borrowBook(id) {
-    fetch_data("/borrowbook", {"book_id": id}, handleBorrowResponse, handleBorrowResponseError);
+    fetchData("/borrowbook", {"book_id": id}, handleBorrowResponse, handleBorrowResponseError);
 }
 
 function handleBorrowResponse(data) {
@@ -206,6 +254,10 @@ function borrowBookPage(id, fromPage) {
 
 function addToToday(num_days) {
     var dt = new Date();
+    return addToDate(dt, num_days);
+}
+
+function addToDate(dt, num_days) {
     dt.setDate(dt.getDate() + num_days);
     return to2Digits(dt.getMonth() + 1) + "/" + to2Digits(dt.getDate()) + "/" + (dt.getYear() + 1900);
 }
@@ -336,64 +388,168 @@ function truncateStr(data, length, minLength) {
     return data;
 }
 
-function books_fetched(books) {
+function memberBooksFetched(books) {
     books_html = new Array()
     booksCount += books.length;
     for (i = 0; i < books.length; i++) {
         book = books[i];
-        booksLoaded["" + book["id"]] = book;
-        books_html.push("<tr id = 'row_" + book["id"] + "'>");
+        borrowFunctions = getBorrowFunctions(book["borrow_date"], book["return_date"], book["borrow_status_id"]);
+        booksLoaded["" + book["book_id"]] = book;
+        books_html.push("<tr id = 'row_" + book["book_id"] + "'>");
         books_html.push("   <td style = 'text-align:left; padding-bottom:5px;border-bottom:5px double lightgray;cursor:hand;'>");
         books_html.push("       <table width = '100%' cellpadding = '5' cellspacing = '2'>");
         books_html.push("          <tr>");
-        books_html.push("              <td rowspan = '4' align = 'left' width = '125'>");
+        books_html.push("              <td rowspan = '3' align = 'left' width = '125'>");
         books_html.push("                <img src = '" + book["coverImg"] + "' width = '100' height = '100' />");
         books_html.push("              </td>");
         books_html.push("              <td style = 'text-align:left;left-padding:10px;' class = 'bookTitleList'>");
-        books_html.push(                  truncateStr(book["title"], 55, 20) + "&nbsp;(" + book["lang"] + ")");
-        if (book["available_copies"] > 0)
-            books_html.push("              <sup class = 'lblAvailable'>Available</sup>");
-        else
-            books_html.push("              <sup class = 'lblNotAvailable'>Not Available</sup>");
+        books_html.push(                  book["title"] + "&nbsp;(" + book["lang"] + ")");
         books_html.push("              </td>");
-        books_html.push("              <td align = 'right'>");
-        books_html.push("                  <button type='button' id = 'btn_" + book["id"] + "' class='btn btn-info btn-xs' onclick = 'viewBookPage(" + book["id"] + ", 1)'>View</button>&nbsp;");
-        if (book["available_copies"] > 0)
-            books_html.push("                  <button type='button' class='btn btn-primary btn-xs' onclick = 'borrowBookPage(" + book["id"] + ", 1)'>Borrow</button>");
+        books_html.push("          </tr>");
+        books_html.push("          <tr>");
+        books_html.push("              <td width = '100%'>");
+        books_html.push("                   <table width = '100%' cellpadding = '2' cellspacing = '2'>");
+        books_html.push("                       <tr>");
+        books_html.push("                           <td width = '50%'>");
+        books_html.push(                                borrowFunctions["msg"]);
+        books_html.push("                           </td>");
+        books_html.push("                           <td width = '50%' align = 'right'>");
+        if (borrowFunctions["function"] != null) {
+            books_html.push("                           <button type='button' id = 'btn_" + book["id"] + "' class='btn " + borrowFunctions["btnClass"] + " btn-sm' onclick = '" + borrowFunctions["function"]+ "(" + book["book_copy_id"] + ", " + book["book_id"] +")'>" + borrowFunctions["label"] + "</button>&nbsp;");
+        }
+        books_html.push("                           </td>");
+        books_html.push("                       </tr>");
+        books_html.push("                   </table>");
         books_html.push("               </td>");
         books_html.push("           </tr>");
         books_html.push("           <tr>");
-        books_html.push("              <td colspan = '2' width = '100%' style = 'text-align:left;left-padding:10px;' class = 'descriptionList'>");
-        books_html.push(                     truncateStr(book["description"], 250, 249));
+        books_html.push("              <td width = '100%'>");
+        books_html.push("                   <table width = '100%' cellpadding = '2' cellspacing = '2'>");
+        books_html.push("                       <tr>");
+        books_html.push("                           <td width = '33%'>");
+        books_html.push("                               <i class='fa-regular fa-calendar-days'></i>&nbsp;Borrow Date&nbsp;:&nbsp;");
+        if (book["borrow_status_id"] == 2 && borrowFunctions["overdue"].length > 0) {
+            books_html.push("                                <span style = 'color:red'>" + book["borrow_date"] + "</span>");
+        } else {
+            books_html.push("                                <span>" + book["borrow_date"] + "</span>");
+        }
+        books_html.push("                           </td>");
+        books_html.push("                           <td width = '33%'>");
+        books_html.push("                               <i class='fa-regular fa-calendar-days'></i>&nbsp;Return Date&nbsp;:&nbsp;");
+        if ((book["borrow_status_id"] == 3 ||  book["borrow_status_id"] == 4) && borrowFunctions["overdue"].length > 0) {
+            books_html.push("                                <span style = 'color:red'>" + book["return_date"] + "</span>");
+        } else {
+            books_html.push("                                <span>" + book["return_date"] + "</span>");
+        }
+        books_html.push("                           </td>");
+        books_html.push("                           <td width = '34%'>");
+        if (borrowFunctions["overdue"].length > 0) {
+            books_html.push("                                <span style = 'color:red'>" + borrowFunctions["overdue"] + "</span>");
+        } else {
+            books_html.push("                                &nbsp;");
+        }
+        books_html.push("                           </td>");
+        books_html.push("                       </tr>");
+        books_html.push("                   </table>");
         books_html.push("               </td>");
         books_html.push("           </tr>");
-        books_html.push("           <tr>");
-        books_html.push("               <td colspan = '2'>");
-        books_html.push("                  <table width = '100%'>");
-        books_html.push("                      <tr>");
-        books_html.push("                          <td width = '50%' style = 'text-align:left;padding-left:0px;' class = 'textList'>");
-        books_html.push("                               <i class='fa fa-solid fa-pen-nib'></i>&nbsp;");
-        books_html.push(                                truncateStr(book["author"], 150, 1));
-        books_html.push("                           </td>");
-        books_html.push("                          <td width = '20%' style = 'text-align:center;padding-left:0px;' class = 'textList'>");
-        books_html.push("                                &nbsp;" + getRatingStarsHTML(book["rating"]) + "&nbsp;(" + book["rating"] + ")");
-        books_html.push("                           </td>");
-        books_html.push("                           <td width = '30%' style = 'text-align:left;padding-right:10px;' class = 'textList'>");
-        books_html.push("                               <i class='fa fa-solid fa-print'></i>&nbsp;");
-        books_html.push(                                truncateStr(book["pub_name"], 150, 1));
-        books_html.push("                           </td>");
-        books_html.push("                      </tr>");
-        books_html.push("         </table>");
-        books_html.push("       </td>");
-        books_html.push("     </tr>");
-        books_html.push("   </table>");
-        books_html.push("  </td>");
-        books_html.push("</tr>");
+        books_html.push("       </table>");
         books_html.push("<tr>");
         books_html.push("   <td>&nbsp;</td>");
         books_html.push("</tr>");
     }
-    $("#booksPane").html($("#booksPane").html() + books_html.join(""));
+    $("#booksPane").html(books_html.join(""));
+}
+
+function isOverdue(date, compareToDate) {
+    try {
+        date = new Date(date);
+        c2Date = new Date(compareToDate);
+        return date.getTime() > c2Date.getTime();
+    } catch (ex) { return false; }
+}
+
+function getBorrowFunctions(borrowDate, returnDate, borrowStatusId) {
+    if (borrowStatusId == 2) {
+        pickupDate = "";
+        try {
+            pickupDate = addToDate(new Date(borrowDate), 2);
+        } catch(ex) { pickupDate = ""; }
+        return {"msg": "Borrowed. Pickup by <b>" + pickupDate +"</b>", "label": "Cancel", "btnClass": "btn-danger", "function": "cancelBorrow", "overdue": (isOverdue(new Date(), pickupDate)? "Pickup Overdue": "")};
+    } else if (borrowStatusId == 3) {
+        return {"msg": "You have it", "label": "Return", "function": "returnBook", "btnClass": "btn-primary", "overdue": (isOverdue(new Date(), returnDate)? "Return Overdue": "")};
+    }
+    else if (borrowStatusId == 4) {
+        returnByDate = "";
+        try {
+            returnByDate = addToDate(new Date(returnDate), 0);
+        } catch(ex) { returnByDate = ""; }
+        return {"msg": "Return Ready. Return by <b>" + returnByDate + "</b>", "label": "Return", "btnClass": "btn-info", "function": null, "overdue": (isOverdue(new Date(), returnByDate)? "Return Overdue": "")};
+    }
+}
+
+function booksFetched(books) {
+    if (booksCount == 0 && books.length == 0) {
+        $("#booksPane").html("<center><b>No books matching the search criteria found</b></center>");
+    } else {
+        books_html = new Array()
+        booksCount += books.length;
+        for (i = 0; i < books.length; i++) {
+            book = books[i];
+            booksLoaded["" + book["id"]] = book;
+            books_html.push("<tr id = 'row_" + book["id"] + "'>");
+            books_html.push("   <td style = 'text-align:left; padding-bottom:5px;border-bottom:5px double lightgray;cursor:hand;'>");
+            books_html.push("       <table width = '100%' cellpadding = '5' cellspacing = '2'>");
+            books_html.push("          <tr>");
+            books_html.push("              <td rowspan = '4' align = 'left' width = '125'>");
+            books_html.push("                <img src = '" + book["coverImg"] + "' width = '100' height = '100' />");
+            books_html.push("              </td>");
+            books_html.push("              <td style = 'text-align:left;left-padding:10px;' class = 'bookTitleList'>");
+            books_html.push(                  truncateStr(book["title"], 55, 20) + "&nbsp;(" + book["lang"] + ")");
+            if (book["available_copies"] > 0)
+                books_html.push("              <sup class = 'lblAvailable'>Available</sup>");
+            else
+                books_html.push("              <sup class = 'lblNotAvailable'>Not Available</sup>");
+            books_html.push("              </td>");
+            books_html.push("              <td align = 'right'>");
+            books_html.push("                  <button type='button' id = 'btn_" + book["id"] + "' class='btn btn-info btn-xs' onclick = 'viewBookPage(" + book["id"] + ", 1)'>View</button>&nbsp;");
+            if (book["available_copies"] > 0)
+                books_html.push("                  <button type='button' class='btn btn-primary btn-xs' onclick = 'borrowBookPage(" + book["id"] + ", 1)'>Borrow</button>");
+            books_html.push("               </td>");
+            books_html.push("           </tr>");
+            books_html.push("           <tr>");
+            books_html.push("              <td colspan = '2' width = '100%' style = 'text-align:left;left-padding:10px;' class = 'descriptionList'>");
+            books_html.push(                     truncateStr(book["description"], 250, 249));
+            books_html.push("               </td>");
+            books_html.push("           </tr>");
+            books_html.push("           <tr>");
+            books_html.push("               <td colspan = '2'>");
+            books_html.push("                  <table width = '100%'>");
+            books_html.push("                      <tr>");
+            books_html.push("                          <td width = '50%' style = 'text-align:left;padding-left:0px;' class = 'textList'>");
+            books_html.push("                               <i class='fa fa-solid fa-pen-nib'></i>&nbsp;");
+            books_html.push(                                truncateStr(book["author"], 150, 1));
+            books_html.push("                           </td>");
+            books_html.push("                          <td width = '20%' style = 'text-align:center;padding-left:0px;' class = 'textList'>");
+            books_html.push("                                &nbsp;" + getRatingStarsHTML(book["rating"]) + "&nbsp;(" + book["rating"] + ")");
+            books_html.push("                           </td>");
+            books_html.push("                           <td width = '30%' style = 'text-align:left;padding-right:10px;' class = 'textList'>");
+            books_html.push("                               <i class='fa fa-solid fa-print'></i>&nbsp;");
+            books_html.push(                                truncateStr(book["pub_name"], 150, 1));
+            books_html.push("                           </td>");
+            books_html.push("                      </tr>");
+            books_html.push("         </table>");
+            books_html.push("       </td>");
+            books_html.push("     </tr>");
+            books_html.push("   </table>");
+            books_html.push("  </td>");
+            books_html.push("</tr>");
+            books_html.push("<tr>");
+            books_html.push("   <td>&nbsp;</td>");
+            books_html.push("</tr>");
+        }
+        $("#booksPane").html($("#booksPane").html() + books_html.join(""));
+    }
     $("#startRow").val(parseInt($("#startRow").val()) + 20);
     fetching = false;
     if (doScrollTo) {
@@ -413,12 +569,17 @@ function getRatingStarsHTML(rating) {
     return stars_html.join("");
 }
 
-function books_fetch_failed() {
+function booksFetchFailed() {
     showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Failed to fetch books list");
     fetching = false;
 }
 
-function fetch_data(url, input, success_callback, error_callback) {
+function memberBooksFetchFailed() {
+    showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Failed to fetch borrowed books list");
+    fetching = false;
+}
+
+function fetchData(url, input, success_callback, error_callback) {
     if (fetching && url == '/getbooks') {
         return;
     }

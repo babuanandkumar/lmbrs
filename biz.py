@@ -27,9 +27,23 @@ def get_books(title, description, lang_id, order_by, start, limit, recommended):
     return consolidate_books(books)
 
 
+def get_member_books(person_id):
+    books = dao.fetch(config.sql("BORROWALS_MEMBER"), (person_id, ))
+    return books
+
+
 def get_all_languages() :
     languages = dao.fetch(config.sql("LANGUAGES"), ())
     return languages
+
+
+def cancel_borrow(book_copy_id, person_id):
+    dao.update(config.sql("UPDATE_BOOK_COPY_BORROW_STATUS"), (1, book_copy_id))
+    dao.update(config.sql("CANCEL_BORROW"), (book_copy_id, person_id))
+
+
+def return_book(book_copy_id):
+    dao.update(config.sql("UPDATE_BOOK_COPY_BORROW_STATUS"), (4, book_copy_id))
 
 
 def borrow_if_available(book_id, person_id):

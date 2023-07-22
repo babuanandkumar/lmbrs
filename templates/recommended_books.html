@@ -16,8 +16,10 @@
                         </form>
                     </td>
                     <td style = "text-align:center">
-                        <i class="fa fa-regular fa-address-book linkMenu"></i>
-                        <a href = "javascript:void();" onclick = "return false;" class = "linkMenu">Borrowals</a>
+                        <form name = "member_borrowals_form" method = "POST" action = "/memberborrowals">
+                            <i class="fa fa-regular fa-address-book linkMenu"></i>
+                            <a href = "javascript:void();" onclick = "showMemberBorrowals();" class = "linkMenu">Borrowals</a>
+                        </form>
                     </td>
                     <td style = "text-align:center">
                         <i class="fa fa-solid fa-circle-user linkMenu"></i>

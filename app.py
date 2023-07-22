@@ -76,6 +76,32 @@ def get_books():
     return json.dumps(biz.get_books(search, search, lang_id, order_by, int(start), limit, recommended), cls=Encoder)
 
 
+@app.route("/getmemberbooks", methods = ['POST'])
+def get_member_books():
+    if not is_session_valid(): return home()
+    user_profile = session["user_profile"]
+    person_id = user_profile["id"]
+    return json.dumps(biz.get_member_books(person_id), cls=Encoder)
+
+
+@app.route("/cancelborrow", methods = ['POST'])
+def cancel_borrow():
+    user_profile = session["user_profile"]
+    book_copy_id = request.values.get("book_copy_id")
+    person_id = user_profile["id"]
+    biz.cancel_borrow(book_copy_id, person_id)
+    return {"success": True, "book_copy_id": book_copy_id}
+
+
+@app.route("/returnbook", methods = ['POST'])
+def return_book():
+    user_profile = session["user_profile"]
+    book_copy_id = request.values.get("book_copy_id")
+    person_id = user_profile["id"]
+    biz.return_book(book_copy_id)
+    return json.dumps({"success": True, "book_copy_id": book_copy_id})
+
+
 @app.route("/borrowbook", methods = ['POST'])
 def borrow_book():
     user_profile = session["user_profile"]
@@ -83,6 +109,13 @@ def borrow_book():
     borrowed = biz.borrow_if_available(book_id, user_profile["id"])
     return json.dumps({"status": borrowed, "book_id": book_id, "user_id": user_profile["id"]})
 
+
+@app.route("/memberborrowals", methods = ['POST'])
+def member_borrowals():
+    if not is_session_valid(): return home()
+    user_profile = session["user_profile"]
+    return render_template("member_borrowals.html",
+                           user_name=user_profile["f_name"].strip() + ", " + user_profile["l_name"].strip())
 
 
 @app.route("/logout", methods = ['POST'])
