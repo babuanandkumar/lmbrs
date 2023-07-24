@@ -34,7 +34,7 @@ def home(msg = None):
 def login():
     session.clear()
     user_profile = biz.get_logon_profile(request.values.get("txt_user"), request.values.get("txt_pwd"))
-    print("Login Profile :" + str(user_profile))
+    print("After Login. User Profile :" + str(user_profile))
     if user_profile is not None:
         if user_profile["status_id"] != 1: return render_template("login.html", error="User Inactive / Suspended")
         else:
