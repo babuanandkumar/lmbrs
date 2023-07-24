@@ -21,7 +21,8 @@ class Encoder(json.JSONEncoder):
 #     biz.init()
 
 
-def is_session_valid():
+def is_session_valid(page):
+    print("**** Is Session Valid ==> ", str(page), ("user_profile" in session.keys() and not session["user_profile"] is None))
     return "user_profile" in session.keys() and not session["user_profile"] is None
 
 
@@ -46,7 +47,7 @@ def login():
 
 @app.route("/books", methods = ['POST'])
 def list_books():
-    if not is_session_valid(): return home()
+    if not is_session_valid("/books"): return home()
     user_profile = session["user_profile"]
     languages = biz.get_all_languages()
     return render_template("list_books.html",
@@ -56,7 +57,7 @@ def list_books():
 
 @app.route("/recommendedbooks", methods = ['POST'])
 def list_recommended_books():
-    if not is_session_valid(): return home()
+    if not is_session_valid("/recommendedbooks"): return home()
     user_profile = session["user_profile"]
     languages = biz.get_all_languages()
     return render_template("recommended_books.html",
@@ -79,7 +80,7 @@ def get_books():
 
 @app.route("/getmemberbooks", methods = ['POST'])
 def get_member_books():
-    if not is_session_valid(): return home()
+    if not is_session_valid("/getmemberbooks"): return home()
     user_profile = session["user_profile"]
     person_id = user_profile["id"]
     return json.dumps(biz.get_member_books(person_id), cls=Encoder)
@@ -113,7 +114,7 @@ def borrow_book():
 
 @app.route("/memberborrowals", methods = ['POST'])
 def member_borrowals():
-    if not is_session_valid(): return home()
+    if not is_session_valid("/memberborrowals"): return home()
     user_profile = session["user_profile"]
     return render_template("member_borrowals.html",
                            user_name=user_profile["f_name"].strip() + ", " + user_profile["l_name"].strip())
