@@ -7,6 +7,9 @@ import biz
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config["SESSION_PERMANENT"] = True
+app.config["SESSION_TYPE"] = "filesystem"
+
 
 with app.app_context():
     biz.init()
