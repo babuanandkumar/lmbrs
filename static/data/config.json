@@ -1,5 +1,6 @@
 {
     "QUERIES_PATH": "static/data/queries.json",
+    "SQLITE_DB_NAME": "db/lmbrs.db",
     "DB_CONFIG_LOCAL": {
               "user": "root",
               "password": "root",

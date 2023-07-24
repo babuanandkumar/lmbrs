@@ -1,3 +1,4 @@
+import biz
 import config
 import dao
 from flask import jsonify
@@ -8,7 +9,6 @@ def init():
 
 
 def update_last_logon(user_id):
-    print("Update last logon")
     return dao.update(config.sql("UPDATE_LAST_LOGON"), (user_id,))
 
 
@@ -20,10 +20,9 @@ def get_logon_profile(user_id, pwd):
 
 
 def get_books(title, description, lang_id, order_by, start, limit, recommended):
-    if recommended == "true":
-        books = dao.fetch(config.sql("SEARCH_RECOMMENDED_BOOKS"), ("%" + title.strip().lower() + "%", "%" + description.strip().lower() + "%", int(lang_id), int(order_by), int(start), int(limit)))
-    else:
-        books = dao.fetch(config.sql("SEARCH_BOOKS"), ("%" + title.strip().lower() + "%", "%" + description.strip().lower() + "%", int(lang_id), int(order_by), int(start), int(limit)))
+    sql_key = "SEARCH_RECOMMENDED_BOOKS" if (recommended == "true") else "SEARCH_BOOKS"
+    sql_key += "_PUB" if (order_by == "1") else ("_RTG" if (order_by == "2") else "_LKD")
+    books = dao.fetch(config.sql(sql_key), ("%" + title.strip().lower() + "%", "%" + description.strip().lower() + "%", int(lang_id), int(start), int(limit)))
     return consolidate_books(books)
 
 
@@ -38,8 +37,8 @@ def get_all_languages() :
 
 
 def cancel_borrow(book_copy_id, person_id):
-    dao.update(config.sql("UPDATE_BOOK_COPY_BORROW_STATUS"), (1, book_copy_id))
-    dao.update(config.sql("CANCEL_BORROW"), (book_copy_id, person_id))
+    return dao.transact([config.sql("UPDATE_BOOK_COPY_BORROW_STATUS"), config.sql("CANCEL_BORROW")],
+                        [(1, book_copy_id), (book_copy_id, person_id)])
 
 
 def return_book(book_copy_id):
@@ -50,10 +49,8 @@ def borrow_if_available(book_id, person_id):
     availability = dao.fetch(config.sql("GET_BOOK_AVAILABILITY"), (book_id, ))
     if len(availability) > 0:
         book_copy_id = availability[0]["id"]
-        print("Book Copy Id :" + str(book_copy_id) + " : " + str(person_id))
-        dao.exec(config.sql("CREATE_BORROW_RECORD"), (book_copy_id, person_id))
-        dao.exec(config.sql("UPDATE_BORROW_STATUS"), (2, book_copy_id))
-        return True
+        return dao.transact([config.sql("CREATE_BORROW_RECORD"), config.sql("UPDATE_BORROW_STATUS")],
+                     [(book_copy_id, person_id), (2, book_copy_id)])
     return False
 
 

@@ -426,7 +426,7 @@ function memberBooksFetched(books) {
         books_html.push("              <td width = '100%'>");
         books_html.push("                   <table width = '100%' cellpadding = '2' cellspacing = '2'>");
         books_html.push("                       <tr>");
-        books_html.push("                           <td width = '33%'>");
+        books_html.push("                           <td width = '40%'>");
         books_html.push("                               <i class='fa-regular fa-calendar-days'></i>&nbsp;Borrow Date&nbsp;:&nbsp;");
         if (book["borrow_status_id"] == 2 && borrowFunctions["overdue"].length > 0) {
             books_html.push("                                <span style = 'color:red'>" + book["borrow_date"] + "</span>");
@@ -434,7 +434,7 @@ function memberBooksFetched(books) {
             books_html.push("                                <span>" + book["borrow_date"] + "</span>");
         }
         books_html.push("                           </td>");
-        books_html.push("                           <td width = '33%'>");
+        books_html.push("                           <td width = '40%'>");
         books_html.push("                               <i class='fa-regular fa-calendar-days'></i>&nbsp;Return Date&nbsp;:&nbsp;");
         if ((book["borrow_status_id"] == 3 ||  book["borrow_status_id"] == 4) && borrowFunctions["overdue"].length > 0) {
             books_html.push("                                <span style = 'color:red'>" + book["return_date"] + "</span>");
@@ -442,7 +442,7 @@ function memberBooksFetched(books) {
             books_html.push("                                <span>" + book["return_date"] + "</span>");
         }
         books_html.push("                           </td>");
-        books_html.push("                           <td width = '34%'>");
+        books_html.push("                           <td width = '20%'>");
         if (borrowFunctions["overdue"].length > 0) {
             books_html.push("                                <span style = 'color:red'>" + borrowFunctions["overdue"] + "</span>");
         } else {
