@@ -395,7 +395,7 @@ function memberBooksFetched(books) {
         book = books[i];
         borrowFunctions = getBorrowFunctions(book["borrow_date"], book["return_date"], book["borrow_status_id"]);
         booksLoaded["" + book["book_id"]] = book;
-        books_html.push("<tr id = 'row_" + book["book_id"] + "'>");
+        books_html.push("<tr id = 'row_" + book["book_id"] + "' style = 'width:100%;'>");
         books_html.push("   <td style = 'text-align:left; padding-bottom:5px;border-bottom:5px double lightgray;cursor:hand;'>");
         books_html.push("       <table width = '100%' cellpadding = '5' cellspacing = '2'>");
         books_html.push("          <tr>");
