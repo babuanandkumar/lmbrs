@@ -152,9 +152,10 @@ def update_book_copy_availability():
     if not is_admin(user_profile): return "Not Authorized"
     book_copy_id = request.values.get("book_copy_id")
     book_status = request.values.get("book_status")
+    member_id = request.values.get("member_id")
     book_status = int(book_status)
     status = biz.update_book_copy_status(book_status, book_copy_id)
-    return json.dumps({"success": status, "book_copy_id": book_copy_id})
+    return json.dumps({"success": status, "book_copy_id": book_copy_id, "member_id": member_id})
 
 
 @app.route("/borrowbook", methods = ['POST'])
