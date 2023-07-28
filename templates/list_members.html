@@ -6,20 +6,16 @@
               <table width = "100%">
                 <tr>
                     <td style = "text-align:center">
-                        <form name = "books_form" method = "POST" action = "/recommendedbooks">
-                            <i class="fa fa-regular fa-thumbs-up linkMenu"></i>
-                            <a href = "javascript:void();" onclick = "showBooks();" class = "linkMenu">Recommended</a>
-                        </form>
-                    </td>
-                    <td style = "text-align:center">
-                        <form name = "books_recommended_form" method = "POST" action = "/books">
+                        <form name = "books_form" method = "POST" action = "/books">
                             <i class="fa-solid fa-book-open" style = 'font-weight:bold;color:black;'></i>
-                            <a href = "javascript:void();" onclick = "showBooksRecommended()" class = "linkMenu">All Books</a>
+                            <a href = "javascript:void();" onclick = "showBooks()" class = "linkMenu">Books</a>
                         </form>
                     </td>
                     <td style = "text-align:center">
-                        <i class="fa fa-solid fa-circle-user linkMenu"></i>
-                        <a href = "javascript:void();" onclick = "return false;" class = "linkMenu">{{ user_name }}</a>
+                        <form name = "all_members_borrowals_form" method = "POST" action = "/allborrowals">
+                            <i class="fa fa-regular fa-address-book" style = 'font-weight:bold;color:black;'></i>
+                            <a href = "javascript:void();" onclick = "showAllBorrowalsAdmin()" class = "linkMenu">All Borrowals</a>
+                        </form>
                     </td>
                     <td style = "text-align:center">
                         <form name = "logout_form" method = "POST" action = "/logout">
@@ -27,7 +23,10 @@
                             &nbsp;<a href = "javascript:void();" onclick = "doLogout();" class = "linkMenu">logout</a>
                         </form>
                     </td>
-
+                     <td style = "text-align:center;font-weight:bold;">
+                        <i class="fa fa-solid fa-circle-user"></i>
+                        {{ user_name }} (Admin)
+                    </td>
                 </tr>
               </table>
         </div>
@@ -38,7 +37,6 @@
     <div class="row">
         <div class="col-lg-10 mx-auto">
             {% include 'modal.html' %}
-            <div class="row">&nbsp;</div>
         </div>
     </div>
     <br/>
@@ -49,11 +47,7 @@
     <div class = "row">
         <div class="col-lg-1 mx-auto;">&nbsp;</div>
         <div class="col-lg-10 mx-auto;">
-            <div id = "booksPane" style = "padding:10px;height:75vh;overflow:auto;" onscroll = "booksListScrolled(this);">
-            </div>
-            <div id = "viewBookPane" style = "padding:10px;height:75vh;overflow:auto; display:none;">
-            </div>
-            <div id = "borrowBookPane" style = "padding:10px;height:75vh;overflow:auto; display:none;">
+            <div id = "membersPane" style = "padding:10px;height:75vh;overflow:auto;">
             </div>
         </div>
         {% include 'modal.html' %}
@@ -61,6 +55,6 @@
     </div>
 </div>
 <script>
-    setPageTitle("fa fa-regular fa-address-book", "Borrowal");
-    getMemberBooks();
+    setPageTitle("fa fa-solid fa-users", "Members");
+    listMembers();
 </script>

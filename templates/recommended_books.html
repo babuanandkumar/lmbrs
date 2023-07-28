@@ -1,17 +1,13 @@
 {% include 'header.html' %}
-<div class="container">
+<div class="container-fluid" style = "padding-top:7px;background-color:#F0FFFF;">
     <div class="row">
-        <div class="col-lg-10 mx-auto">
-            {% include 'modal.html' %}
-            <div class="text-left pt-20 pageTitle">
-                <i class="fa-regular fa-thumbs-up pageTitle"></i> Recommended Books
-            </div>
-            <div class="row">
+        <div class="col-lg-3 mx-auto">&nbsp;</div>
+        <div class="col-lg-6 mx-auto">
               <table width = "100%">
                 <tr>
                     <td style = "text-align:center">
                         <form name = "books_form" method = "POST" action = "/books">
-                            <i class="fa-solid fa-book-open" style = 'color:purple'></i>
+                            <i class="fa-solid fa-book-open" style = 'font-weight:bold;color:black;'></i>
                             <a href = "javascript:void();" onclick = "showBooks()" class = "linkMenu">All Books</a>
                         </form>
                     </td>
@@ -27,45 +23,21 @@
                     </td>
                     <td style = "text-align:center">
                         <form name = "logout_form" method = "POST" action = "/logout">
-                            <i class="fa-solid fa-door-open" style = 'color:purple;'></i>
+                            <i class="fa-solid fa-door-open" style = 'font-weight:bold;color:black;'></i>
                             &nbsp;<a href = "javascript:void();" onclick = "doLogout();" class = "linkMenu">logout</a>
                         </form>
                     </td>
 
                 </tr>
               </table>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row" id = "searchPane" style = "display:none;">
-                <table width = "100%">
-                    <tr>
-                        <td width = "15%">
-                            <select id = "selLang" class="selectpicker" data-live-search="true" onchange = "newSearch(2);">
-                                {% for item in languages %}
-                                    {% if item["id"] == 2 %}
-                                        <option value = "{{item['id']}}" selected>{{item["name"]}}</option>
-                                    {% else %}
-                                        <option value = "{{item['id']}}">{{item["name"]}}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td width = "55%" nowrap>
-                            <input id="txtSearch" name="txtSearch" type="text" onkeypress = "checkEnter();" class="form-control" value = "" placeholder="Search by Title / Description"/>
-                        </td>
-                        <td width = "5%" nowrap>
-                            <button class="btn btn-primary"><i class="fa fa-brands fa-searchengin linkMenu" onclick = "newSearch(1);" style = "color:white"></i></button>
-                        </td>
-                        <td width = "25%">
-                            <select id = "selOrder" class="selectpicker" data-live-search="false" onchange = "newSearch(2);">
-                                <option value = "1">Newest on top</option>
-                                <option value = "2">Highest rated on top</option>
-                                <option value = "3" selected>Most liked on top</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+        </div>
+        <div class="col-lg-3 mx-auto">&nbsp;</div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% include 'modal.html' %}
         </div>
     </div>
     <br/>
@@ -76,7 +48,7 @@
     <div class = "row">
         <div class="col-lg-1 mx-auto;">&nbsp;</div>
         <div class="col-lg-10 mx-auto;">
-            <div id = "booksPane" style = "padding:10px;height:75vh;overflow:auto;display:none;" onscroll = "booksListScrolled(this);">
+            <div id = "booksPane" style = "padding:10px;height:75vh;overflow:auto;display:none;">
             </div>
             <div id = "viewBookPane" style = "padding:10px;height:75vh;overflow:auto; display:none;">
             </div>
@@ -88,6 +60,8 @@
     </div>
 </div>
 <script>
+    isAdmin = false;
     isRecommended = true;
-    newSearch(1, -1);
+    setPageTitle("fa-regular fa-thumbs-up", "Recommended Books");
+    getRecommendedBooks();
 </script>

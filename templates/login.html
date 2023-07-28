@@ -5,23 +5,16 @@
             <div class="col-lg-6 mx-auto">
                 {% include 'modal.html' %}
                 <fieldset>
-                    <!-- Form Name -->
-                    <div class="text-left pt-20 pageTitle">
-                        <i class="fa fa-solid fa-right-to-bracket pageTitle"></i></i>
-                        Login
-                    </div>
-                    <div class="row">
-                        &nbsp;
-                    </div>
+                    <div class="row">&nbsp;</div>
                     <div class="form-group">
                         <label class="col-form-label" for="textinput"><i class="fa fa-solid fa-user faicon"></i> User</label>
-                        <input id="txt_user" name="txt_user" type="text" class="form-control" value = "anbabu"/>
+                        <input id="txt_user" name="txt_user" type="text" class="form-control" value = "cgalgano" />
                     </div>
 
                     <!-- Password input-->
                     <div class="form-group">
                         <label class="col-form-label" for="passwordinput"><i class="fa fa-solid fa-key faicon"></i>Password</label>
-                        <input id="txt_pwd" name="txt_pwd" type="password" placeholder="" class="form-control input-md" value = "password" />
+                        <input id="txt_pwd" name="txt_pwd" type="password" placeholder="" class="form-control input-md" value = "araquanid" />
                     </div>
 
                     <label class="col-form-label" for="index"></label>
@@ -33,5 +26,10 @@
 </form>
 
 {% include 'message.html' %}
+
+<script>
+    setPageTitle("fa fa-solid fa-right-to-bracket", "Login");
+</script>
+
 </body>
 </html>

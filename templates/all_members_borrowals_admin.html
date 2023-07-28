@@ -1,0 +1,84 @@
+{% include 'header.html' %}
+<div class="container-fluid" style = "padding-top:7px;background-color:#F0FFFF;">
+    <div class="row">
+        <div class="col-lg-3 mx-auto">&nbsp;</div>
+        <div class="col-lg-6 mx-auto">
+              <table width = "100%">
+                <tr>
+                    <td style = "text-align:center">
+                        <form name = "books_form" method = "POST" action = "/books">
+                            <i class="fa-solid fa-book-open" style = 'font-weight:bold;color:black;'></i>
+                            <a href = "javascript:void();" onclick = "showBooks()" class = "linkMenu">Books</a>
+                        </form>
+                    </td>
+                    <td style = "text-align:center">
+                        <form name = "members_form" method = "POST" action = "/showmembers">
+                            <i class="fa fa-solid fa-users" style = "font-weight:bold;color:black;"></i>
+                            <a href = "javascript:void();" onclick = "showMembers();" class = "linkMenu">Members</a>
+                        </form>
+                    </td>
+                    <td style = "text-align:center">
+                        <form name = "logout_form" method = "POST" action = "/logout">
+                            <i class="fa-solid fa-door-open"  style = 'font-weight:bold;color:black;;'></i>
+                            &nbsp;<a href = "javascript:void();" onclick = "doLogout();" class = "linkMenu">logout</a>
+                        </form>
+                    </td>
+                    <td style = "text-align:center;font-weight:bold;">
+                        <i class="fa fa-solid fa-circle-user"></i>
+                        {{ user_name }} (Admin)
+                    </td>
+                </tr>
+              </table>
+        </div>
+        <div class="col-lg-3 mx-auto">&nbsp;</div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% include 'modal.html' %}
+            <div class="row">&nbsp;</div>
+            <div class="row" id = "searchPane" style = "text-align:center;">
+                <table width = "100%">
+                    <tr>
+                        <td width = "20%">
+                            <select id = "selBorrowStatus" class="selectpicker" data-live-search="false" onchange = "newSearchABAdmin(2);">
+                                <option value = "2" selected>Awaiting Pickup</option>
+                                <option value = "3">Borrowed</option>
+                                <option value = "4">Awaiting Return</option>
+                            </select>
+                        </td>
+                        <td width = "70%" align = "center" nowrap>
+                            <input id="txtSearch" name="txtSearch" type="text" onkeypress = "checkEnter(1);" class="form-control" value = "" placeholder="Enter part of title / person name and press return"/>
+                        </td>
+                        <td width = "5%" align = "center" nowrap>
+                            <button class="btn btn-primary"><i class="fa fa-brands fa-searchengin" onclick = "newSearchABAdmin(1);" style = "color:white"></i></button>
+                        </td>
+                        <td width = "5%" align = "center" nowrap>
+                            <button class="btn btn-primary"><i class="fa fa-solid fa-xmark" onclick = "clearSearch(2);" style = "color:white"></i></button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <input type = "hidden" id = "startRow" value = "{{start}}"/>
+    <input type = "hidden" id = "hidLang" value = "2"/>
+    <input type = "hidden" id = "hidSearch" value = ""/>
+    <input type = "hidden" id = "hidOrder" value = "2"/>
+    <input type = "hidden" id = "hidBorrowStatus" value = "2"/>
+    <div class = "row">
+        <div class="col-lg-1 mx-auto;">&nbsp;</div>
+        <div class="col-lg-10 mx-auto;">
+            <div id = "booksPane" style = "padding:10px;height:75vh;overflow:auto;" onscroll = "booksListScrolledABAdmin(this);">
+            </div>
+        </div>
+        {% include 'modal.html' %}
+        <div class="col-lg-1 mx-auto;">&nbsp;</div>
+    </div>
+</div>
+<script>
+    setPageTitle("fa fa-regular fa-address-book", "Borrowal");
+    newSearchABAdmin(1, -1);
+</script>
