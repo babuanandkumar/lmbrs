@@ -1,20 +1,4 @@
 {
     "QUERIES_PATH": "static/data/queries.json",
-    "SQLITE_DB_NAME": "db/lmbrs.db",
-    "DB_CONFIG_LOCAL": {
-              "user": "root",
-              "password": "root",
-              "host": "localhost",
-              "port": 8889,
-              "database": "LMBRS",
-              "raise_on_warnings": false
-    },
-    "DB_CONFIG_CLOUD": {
-      "user": "bd592739fbf2d2",
-      "password": "3618d1bc",
-      "host": "us-cdbr-east-06.cleardb.net",
-      "port": 3306,
-      "database": "heroku_58352a0625fdf97",
-      "raise_on_warnings": false
-    }
+    "SQLITE_DB_NAME": "db/lmbrs.db"
 }

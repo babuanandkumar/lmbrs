@@ -8,7 +8,9 @@ CONFIG_PATH = "static/data/config.json"
 def init():
     try:
         load_config()
+        print("Loaded Configuration.")
         load_queries()
+        print("Loaded Queries.")
     except:
         print("Error Initializing application")
 

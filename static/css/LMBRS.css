@@ -23,8 +23,8 @@ html, body, html * {
 }
 
 .linkMenu {
-    font-weight:500;
-    color:purple;
+    font-weight:bold;
+    color:black;
     /*border-color: purple;
     border-style: double;*/
 }
@@ -73,4 +73,14 @@ ratingStar_full {
     background-color:lightGray;
     color:black;
     font-weight:bold;
+}
+
+.menubar {
+    padding-top:20px;
+    position:relative;
+    top:-2px;
+    background-color:#F6F6F6;
+    border-left:1px solid gray;
+    border-bottom:1px solid gray;
+    border-right:1px solid gray;"
 }

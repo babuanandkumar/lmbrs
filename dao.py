@@ -16,7 +16,7 @@ def get_connection():
 
 def exec(stmt, tuple, sql_type = 1):
   conn, cursor = get_connection()
-  affected = cursor.execute(stmt, tuple)
+  affected = cursor.execute(stmt, tuple) if not tuple is None else cursor.execute(stmt)
   if sql_type == 1: # Read
     records = cursor.fetchall()
     cursor.close()
@@ -31,7 +31,6 @@ def fetch(query, tuple):
 
 
 def update(stmt, tuple):
-  #print(stmt, tuple)
   return exec(stmt, tuple, UPDATE)
 
 
@@ -51,6 +50,8 @@ def transact(stmts, tuples):
       return False
     except:
       return False
+
+
 
 
 
