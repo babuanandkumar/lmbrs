@@ -181,6 +181,7 @@ function updatePickedup(bookCopyId, bookId, memberId) {
 
 function updatePickedupSuccess(data) {
     if (data["success"] == true) {
+        memberId = data["member_id"];
         getMemberBooksAdmin(memberId);
     } else {
         showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to update pick up.");
@@ -1023,7 +1024,7 @@ function allMembersBorrowalsAdminFetched(books) {
             books_html.push("                <img src = '" + book["coverImg"] + "' width = '100' height = '100' />");
             books_html.push("              </td>");
             books_html.push("              <td style = 'text-align:left;left-padding:10px;' class = 'bookTitleList'>");
-            books_html.push(                  book["book_id"] + " : " + book["title"] + "&nbsp;(" + book["lang"] + ")");
+            books_html.push(                  book["title"] + "&nbsp;(" + book["lang"] + ")");
             books_html.push("              </td>");
             books_html.push("          </tr>");
             books_html.push("          <tr>");
