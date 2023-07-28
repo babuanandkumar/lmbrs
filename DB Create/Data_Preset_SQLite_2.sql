@@ -1,0 +1,7 @@
+INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) SELECT id, 2, DATE('2023-07-08'), DATE('2023-07-08', '+32 days') from book_copy where id not in (Select book_copy_id from borrowal) order by RANDOM() LIMIT 50;
+INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) SELECT id, 4, DATE('2023-07-20'), DATE('2023-07-20', '+32 days') from book_copy where id not in (Select book_copy_id from borrowal) order by RANDOM() LIMIT 50;
+INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) SELECT id, 5, DATE('2023-07-22'), DATE('2023-07-22', '+32 days') from book_copy where id not in (Select book_copy_id from borrowal) order by RANDOM() LIMIT 50;
+INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) SELECT id, 6, DATE('2023-07-24'), DATE('2023-07-24', '+32 days') from book_copy where id not in (Select book_copy_id from borrowal) order by RANDOM() LIMIT 50;
+INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) SELECT id, 7, DATE('2023-07-26'), DATE('2023-07-26', '+32 days') from book_copy where id not in (Select book_copy_id from borrowal) order by RANDOM() LIMIT 50;
+INSERT INTO borrowal (book_copy_id, person_id, borrow_date, return_date) SELECT id, 8, DATE('2023-07-28'), DATE('2023-07-28', '+32 days') from book_copy where id not in (Select book_copy_id from borrowal) order by RANDOM() LIMIT 50;
+UPDATE book_copy SET borrow_status_id = 2 WHERE id IN (SELECT book_copy_id FROM borrowal);
