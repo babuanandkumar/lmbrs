@@ -138,6 +138,16 @@ def cancel_borrow():
     return {"success": status, "book_copy_id": book_copy_id}
 
 
+@app.route("/cancelborrowadmin", methods = ['POST'])
+def cancel_borrow_admin():
+    user_profile = session["user_profile"]
+    if not is_admin(user_profile): return "Not Authorized"
+    book_copy_id = request.values.get("book_copy_id")
+    member_id = request.values.get("member_id")
+    status = biz.cancel_borrow(book_copy_id, member_id)
+    return {"success": status, "book_copy_id": book_copy_id, "member_id": member_id}
+
+
 @app.route("/returnbook", methods = ['POST'])
 def return_book():
     user_profile = session["user_profile"]

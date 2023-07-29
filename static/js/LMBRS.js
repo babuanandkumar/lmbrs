@@ -1,11 +1,13 @@
-fetching = false;
-booksLoaded = [];
-booksCount = 0;
-bookLoadAlertShown = false;
-lastPane = 1;
-scrollToElementId = "";
-doScrollTo = false;
-isRecommended = false;
+var fetching = false;
+var booksLoaded = [];
+var booksCount = 0;
+var bookLoadAlertShown = false;
+var lastPane = 1;
+var scrollToElementId = "";
+var doScrollTo = false;
+var isRecommended = false;
+var memberId = null;
+
 
 function setPageTitle(iconClasses, title) {
     $("#spnPageTitle").html("<i class='" + iconClasses + "' style = 'font-size:18pt;'></i>&nbsp;&nbsp;" + title);
@@ -137,9 +139,15 @@ function checkEnter(id) {
     }
 }
 
-function cancelBorrow(bookCopyId, bookId) {
+function cancelBorrowMember(bookCopyId, bookId) {
     if (confirm("Please confirm cancelling the borrowal of the book - '" + booksLoaded["" + bookId]["title"] + "'")) {
         fetchData("/cancelborrow", {"book_copy_id": bookCopyId}, cancelBorrowSuccess, cancelBorrowFailed);
+    }
+}
+
+function cancelBorrowAdmin(bookCopyId, bookId, memberId) {
+    if (confirm("Please confirm cancelling the borrowal of the book - '" + booksLoaded["" + bookId]["title"] + "'")) {
+        fetchData("/cancelborrowadmin", {"book_copy_id": bookCopyId, "member_id": memberId}, cancelBorrowSuccessAdmin, cancelBorrowFailedAdmin);
     }
 }
 
@@ -158,6 +166,19 @@ function cancelBorrowSuccess(data) {
 }
 
 function cancelBorrowFailed(data) {
+    showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to cancel borrow.")
+}
+
+function cancelBorrowSuccessAdmin(data) {
+    if (data["success"] == true) {
+        memberId = data["member_id"];
+        getMemberBooksAdmin(memberId);
+    } else {
+        showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to cancel borrow.")
+    }
+}
+
+function cancelBorrowFailedAdmin(data) {
     showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to cancel borrow.")
 }
 
@@ -200,6 +221,7 @@ function updateReturned(bookCopyId, bookId, memberId) {
 
 function updateReturnedSuccess(data) {
     if (data["success"] == true) {
+        memberId = data["member_id"];
         getMemberBooksAdmin(memberId);
     } else {
         showModal("<i class='fa fa-solid fa-circle-xmark faicon' style = 'color:red'></i> Error", "Error while attempting to update return.");
@@ -825,7 +847,7 @@ function getBorrowFunctions(borrowDate, returnDate, borrowStatusId, isAdmin) {
         try {
             pickupDate = addToDate(new Date(borrowDate), 2);
         } catch(ex) { pickupDate = ""; }
-        return {"msg": "Borrowed. " + ((isAdmin)?"To be picked up ":"Pickup by ") + "<b>" + pickupDate +"</b>", "label": ((isAdmin)?["Picked Up", "Cancel"]:"Cancel"), "btnClass": ((isAdmin)?["btn-primary", "btn-danger"]:"btn-danger"), "function": ((isAdmin)?["updatePickedup", "cancelBorrow"]:"cancelBorrow"), "overdue": (isOverdue(new Date(), pickupDate)? "Pickup Overdue": "")};
+        return {"msg": "Borrowed. " + ((isAdmin)?"To be picked up ":"Pickup by ") + "<b>" + pickupDate +"</b>", "label": ((isAdmin)?["Picked Up", "Cancel"]:"Cancel"), "btnClass": ((isAdmin)?["btn-primary", "btn-danger"]:"btn-danger"), "function": ((isAdmin)?["updatePickedup", "cancelBorrowAdmin"]:"cancelBorrowMember"), "overdue": (isOverdue(new Date(), pickupDate)? "Pickup Overdue": "")};
     } else if (borrowStatusId == 3) {
         return {"msg": ((isAdmin)?"Member has it":"You have it"), "label": ((isAdmin)?["Returned"]:"Return"), "function": ((isAdmin)?["updateReturned"]:"returnBook"), "btnClass": ((isAdmin)?["btn-info"]:"btn-info"), "overdue": (isOverdue(new Date(), returnDate)? "Return Overdue": "")};
     } else if (borrowStatusId == 4) {
